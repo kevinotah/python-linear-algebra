@@ -150,7 +150,13 @@ class Matrix(Generic[T]):
 
         # CHALLENGE: student must complete the implementation.
         # HINT: goal <= 9 lines
-        raise NotImplementedError()
+
+        new_grid = [
+            [self[r][c] for c in range(self.cols) if c != remove_col]
+            for r in range(self.rows)
+            if r != remove_row
+        ]
+        return Matrix(new_grid)
 
     def replace_col(self, k: int, v: Vector) -> "Matrix":
         """Return a new Matrix formed by replacing column k of the given Matrix

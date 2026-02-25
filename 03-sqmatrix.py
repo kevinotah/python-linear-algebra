@@ -68,7 +68,7 @@ class SqMatrix(Matrix):
         matrix has 0 (integer) off the main diagonal."""
         # CHALLENGE: student must complete the implementation.
         # HINT: goal = 1 line
-        raise NotImplementedError()
+        return SqMatrix.tabulate(len(entries), lambda r, c: entries[r] if r == c else 0)
 
     def gaussian_elimination_back_substitution(self, v: Vector) -> Optional[Vector]:
         """Adjoin the given column vector to the matrix, self.
@@ -125,15 +125,18 @@ class SqMatrix(Matrix):
         # CHALLENGE: student must complete the implementation.
         # HINT: goal <= 13 lines
 
-        # # n = m.dim
-        # if n == 2
-        # return m[0][0] * m[1][1] - m[1][0] * m[0][1]
-        # # return sum(m[0][i] * m.suppress_rc(0, i).laplacian_expansion() * (-1) ** i)
+        if self.dim == 1:
+            return self.content[0][0]
+
+        if self.dim == 2:
+            return (self[0][0] * self[1][1]) - (self[0][1] * self[1][0])
+
+        return sum(self[0][i] * ((-1)**i) * self.suppress_rc(0, i).laplacian_expansion() for i in range(self.dim))
 
     def cramers_rule(self, b: Vector) -> Vector:
         """Return a new vector which solves the system of equations Ax=b,
         where A is the matrix self.   If the determinant of A is 0, then None
-        is returned.  The solution is found using Cramer\'s Rule:
+        is returned.  The solution is found using Cramer's Rule:
         I.e., to compute the k'th component of the returned Vector,
         we replaced the k'th column of a by the column vector b,
         and calculate the determinant of that matrix, then divide by
@@ -142,7 +145,12 @@ class SqMatrix(Matrix):
         assert self.dim == b.dim
         # CHALLENGE: student must complete the implementation.
         # HINT: goal <= 5 lines
-        raise NotImplementedError()
+        det_A = self.laplacian_expansion()
+
+        if det_A == 0:
+            return None
+
+        return Vector([self.replace_col(k, b).laplacian_expansion() / det_A for k in range(self.dim)])
 
     def power(self, p: int) -> "SqMatrix":
         """Raise the matrix to the p'th power."""
